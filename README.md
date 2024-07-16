@@ -7,5 +7,5 @@
 ## Steps
 
 ```
-glasskube bootstrap --dry-run -o yaml > apps/glasskube.yaml
+glasskube bootstrap --dry-run -o yaml > apps/glasskube/glasskube.yaml
 ```
