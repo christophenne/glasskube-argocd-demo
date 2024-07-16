@@ -13,7 +13,7 @@
         ],
         "datasourceTemplate": "glasskube-packages",
         "versioningTemplate": "glasskube",
-        "depNameTemplate": "glasskube/packages"
+        "depNameTemplate": "cert-manager"
     }
   ]
 }
