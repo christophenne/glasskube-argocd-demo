@@ -25,7 +25,7 @@ It is necessary that bootstrap is completed, in order for the following install 
 ### Install a package
 
 ```
-glasskube install cert-manager --dry-run -o yaml --yes > apps/packages/cert-manager/package.yaml
+glasskube install cert-manager --dry-run -o yaml --yes > apps/packages/cert-manager/clusterpackage.yaml
 ```
 
 As we are following the [apps of apps pattern](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#app-of-apps),

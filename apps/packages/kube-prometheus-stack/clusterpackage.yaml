@@ -1,0 +1,60 @@
+apiVersion: packages.glasskube.dev/v1alpha1
+kind: ClusterPackage
+metadata:
+  creationTimestamp: "2024-07-16T12:02:43Z"
+  generation: 1
+  managedFields:
+  - apiVersion: packages.glasskube.dev/v1alpha1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:spec:
+        .: {}
+        f:packageInfo:
+          .: {}
+          f:name: {}
+          f:repositoryName: {}
+          f:version: {}
+        f:values:
+          .: {}
+          f:alertmanagerEnabled:
+            .: {}
+            f:value: {}
+          f:grafanaDomain:
+            .: {}
+            f:value: {}
+          f:grafanaEnabled:
+            .: {}
+            f:value: {}
+          f:prometheusNodeExporterHostNetwork:
+            .: {}
+            f:value: {}
+          f:prometheusRetention:
+            .: {}
+            f:value: {}
+          f:prometheusStorageSize:
+            .: {}
+            f:value: {}
+    manager: glasskube
+    operation: Update
+    time: "2024-07-16T12:02:43Z"
+  name: kube-prometheus-stack
+spec:
+  packageInfo:
+    name: kube-prometheus-stack
+    repositoryName: glasskube
+    version: v58.6.1+1
+  values:
+    alertmanagerEnabled:
+      value: "false"
+    grafanaDomain:
+      value: ""
+    grafanaEnabled:
+      value: "true"
+    prometheusNodeExporterHostNetwork:
+      value: "false"
+    prometheusRetention:
+      value: 30d
+    prometheusStorageSize:
+      value: 10Gi
+status: {}
+
