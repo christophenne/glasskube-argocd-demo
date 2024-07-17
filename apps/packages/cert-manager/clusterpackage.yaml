@@ -6,6 +6,6 @@ spec:
   packageInfo:
     name: cert-manager
     repositoryName: glasskube
-    version: v1.15.1+1
+    version: v1.13.3+1
 status: {}
 
