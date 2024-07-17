@@ -1,22 +1,6 @@
 apiVersion: packages.glasskube.dev/v1alpha1
 kind: ClusterPackage
 metadata:
-  creationTimestamp: "2024-07-16T10:12:05Z"
-  generation: 1
-  managedFields:
-  - apiVersion: packages.glasskube.dev/v1alpha1
-    fieldsType: FieldsV1
-    fieldsV1:
-      f:spec:
-        .: {}
-        f:packageInfo:
-          .: {}
-          f:name: {}
-          f:repositoryName: {}
-          f:version: {}
-    manager: glasskube
-    operation: Update
-    time: "2024-07-16T10:12:05Z"
   name: cert-manager
 spec:
   packageInfo:
