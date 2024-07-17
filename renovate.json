@@ -9,11 +9,10 @@
           ".+\\.(yaml)|(yml)$"
         ],
         "matchStrings": [
-          "version: \"(?<currentValue>.*)\"[ \t]*#[ \t]*renovate: glasskube"
+          "packageInfo:.*\n.*name: (?<depName>.*)\n.*\n.*version: (?<currentValue>.*)"
         ],
         "datasourceTemplate": "glasskube-packages",
-        "versioningTemplate": "glasskube",
-        "depNameTemplate": "cert-manager"
+        "versioningTemplate": "glasskube"
     }
   ]
 }
