@@ -248,11 +248,28 @@ packageInfo:
   version: <currentValue>
 ```
 
-in all the repo's yaml files, where the `depName` and `currentValue` will be used by renovate to extract the current version of this (cluster-)package. 
+in all the repo's yaml files, where the `depName` and `currentValue` will be used by renovate to extract the current version of this (cluster-)package.
+
+The regex-based approach has some limitations (see below), and they will be resolved with the custom Glasskube Renovate manager. 
+However, we can still show that on a general level, Glasskube packages can be updated successfully with this:
+
+TBA downgrade – sync, rerun renovate, see that a PR appears – sync
 
 One issue with this regex-based approach is, that `name` and `version` have to appear in that order, even though schematically it would also be correct the other way around.
 
-Another limitation of the current renovate integration is, that it works only with packages of the [public Glasskube package repo](https://github.com/glasskube/packages). 
+Another limitation of the current renovate integration is, that it works only with packages of the [public Glasskube package repo](https://github.com/glasskube/packages).
+**TODO** this is a followup task inside the renovate datasource I think? Making the repo configurable, also with auth. 
+
+Last but not least, without a dedicated glasskube manager inside renovate, renovate will not be aware of dependencies. That means, it will simply always try
+to update to the latest version, instead of checking whether an update to that version is actually allowed in the used cluster. As a consequence, this could 
+lead to somebody installing a version that is not allowed because of dependency restrictions, however, the package operator will not actually install it. The
+package status would be set to "Failed" with an error message indicating the dependency conflict, but the previously installed version of the package would
+not be touched/destroyed. 
+
+**TODO** making the manager dependency aware will be very interesting and most likely only be possible in the selfhosted renovate, because it actually
+needs to somehow interact with the cluster, to see which packages are installed in which versions to do the dependency resolution. 
+For exmaple there could be an in-cluster component with an endpoint /latest-available-update?package={package}, that does the dependency check and
+returns the latest possible installable version, taking dependencies into account. Maybe we could call this endpoint from the renovate manager. 
 
 ## Updating Glasskube
 
@@ -260,7 +277,13 @@ Another limitation of the current renovate integration is, that it works only wi
 
 ## Custom Package Repository
 
+TBA
+
 ## Known Issues
+
+### Renovate Limitations
+
+TBA but see above
 
 ### Dependency Resolution
 
@@ -270,36 +293,8 @@ would output the clusterpackage custom resource for `P`. However, the dependency
 the package operator, and will therefore not be represented in the git repository at all. A temporary workaround would be to have a closer look
 at the output of the `install` command, which also shows the dependencies which will be installed and in which version. One could then 
 manually add the required packages custom resources to the git repo as well. However, this will be tackled in a future version to make the
-user experience better, see [glasskube/glasskube#430](https://github.com/glasskube/glasskube/issues/430). 
+user experience better, see [glasskube/glasskube#430](https://github.com/glasskube/glasskube/issues/430).
 
 ## Summary
 
----
-
-old:
-
-### Parent App
-
-Create the parent glasskube app manually via the UI or CLI. 
-
-Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/cluster-bootstrapping/#helm-example
-
-### Bootstrap Glasskube
-
-```
-glasskube bootstrap --dry-run -o yaml > apps/glasskube.yaml
-```
-
-Afterwards, push it into your repo and sync the glasskube application. 
-It is necessary that bootstrap is completed, in order for the following install commands to work:
-
-### Install a package
-
-```
-glasskube install cert-manager --dry-run -o yaml --yes > apps/packages/cert-manager/clusterpackage.yaml
-```
-
-As we are following the [apps of apps pattern](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#app-of-apps),
-you should also create an argocd `Application` for `cert-manager` (see `apps/cert-manager.yaml`).
-
-
+TBA
