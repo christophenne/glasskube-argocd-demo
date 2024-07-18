@@ -28,7 +28,7 @@ Therefore, we don't start from the very beginning, but instead ask you to make s
 ## General Setup
 
 First, let's discuss how we are going to do it: We will follow the [Apps of Apps Pattern](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#app-of-apps),
-and therefore have one Application for the Glasskube installation itself, and one Application for every installed Glasskube package. 
+and therefore have one Application for every installed Glasskube package, and one Application for Glasskube itself. 
 
 TBA
 
@@ -36,23 +36,25 @@ TBA
 
 Glasskube relies on in-cluster components and CRDs, making it necessary to first install these in your cluster.
 
-The `glasskube bootstrap` commands, as many other `glasskube` commands, supports a `--dry-run` flag, which in combination with the `-o yaml` argument,
+The `glasskube bootstrap` command (additional docs [here](https://glasskube.dev/docs/getting-started/bootstrap/)), 
+as many other `glasskube` commands, supports a `--dry-run` flag, which in combination with the `-o yaml` argument,
 returns the list of manifests that it would apply to cluster without actually applying them. We will use the produced `yaml` output and
-commit it into our repo, alongside with an argo `Application` wrapping it.
+commit it into our repo.
 
-**Bootstrap**
 ```
-glasskube bootstrap --dry-run -o yaml > apps/glasskube/glasskube/glasskube.yaml
+glasskube bootstrap --dry-run -o yaml > apps/glasskube.yaml
 ```
 
-TODO not sure about all the paths/directory structure yet, but I think
-* every package must be in its own directory, so that we can refer to it explicitly in the wrapping Application
-* 
+Following the [ArgoCD documentation](), we create the parent application `glasskube` manually via the argo CLI or UI. 
+Of course you can also define it as an `Application` custom resource and apply it with `kubectl` (TODO I would expect that it's possible to
+also have the parent application in the gitops repo – but I don't know how it would initially get picked up by argo? – also in the Argo docs
+it's done manually via CLI). Most notably, we indirectly refer to the previously generated `yaml` in `path`:
 
-**Argo Application**
+```yaml
 
+```
 
-More information on bootstrapping can be found [here](https://glasskube.dev/docs/getting-started/bootstrap/).
+TODO not sure about all the paths/directory structure yet, but I think every package must be in its own directory, so that we can refer to it explicitly in the wrapping Application
 
 ## Installing packages
 
