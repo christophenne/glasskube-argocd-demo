@@ -225,7 +225,6 @@ We can add the following `regexMatcher` to `renovate.json`:
 
 ```json
 {
-  …,
   "regexManagers": [
     {
         "fileMatch": [
@@ -237,8 +236,7 @@ We can add the following `regexMatcher` to `renovate.json`:
         "datasourceTemplate": "glasskube-packages",
         "versioningTemplate": "glasskube"
     }
-  ],
-  …
+  ]
 }
 ```
 
