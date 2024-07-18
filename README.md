@@ -25,6 +25,10 @@ Therefore, we don't start from the very beginning, but instead ask you to make s
 * Have ArgoCD installed in your cluster
 * Connect an empty repo or your fork of [TBA](https://github.com/glasskube/TBA) to your ArgoCD installation, such that it can serve as the source of truth
 
+In the following we make use of a local minikube cluster. 
+
+This repo already contains the completed solution, so if you aim to follow the guid step by step from scratch, you should start with an empty repo. 
+
 ## General Setup
 
 First, let's discuss how we are going to do it: We will follow the [Apps of Apps Pattern](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#app-of-apps),
@@ -45,16 +49,43 @@ commit it into our repo.
 glasskube bootstrap --dry-run -o yaml > apps/glasskube.yaml
 ```
 
-Following the [ArgoCD documentation](), we create the parent application `glasskube` manually via the argo CLI or UI. 
-Of course you can also define it as an `Application` custom resource and apply it with `kubectl` (TODO I would expect that it's possible to
-also have the parent application in the gitops repo – but I don't know how it would initially get picked up by argo? – also in the Argo docs
-it's done manually via CLI). Most notably, we indirectly refer to the previously generated `yaml` in `path`:
+Following the [ArgoCD documentation](https://argo-cd.readthedocs.io/en/stable/operator-manual/cluster-bootstrapping/#app-of-apps-pattern), we create the parent application `glasskube` manually via the argo CLI or UI. 
+Of course you can also define it as an `Application` custom resource and apply it with `kubectl` 
+
+(TODO I would expect that it's possible to also have the parent application in the gitops repo – 
+but I don't know how it would initially get picked up by argo? – also in the Argo docs it's done manually via CLI). 
+
+Most notably, we indirectly refer to the previously generated `yaml` in `path`. This is what the custom resource could look like
+after the application has been created:
 
 ```yaml
-
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: glasskube
+  namespace: argocd
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: apps
+    repoURL: https://github.com/glasskube/TBA
+    targetRevision: HEAD
 ```
 
 TODO not sure about all the paths/directory structure yet, but I think every package must be in its own directory, so that we can refer to it explicitly in the wrapping Application
+
+Depending on the selected sync policy, ArgoCD will automatically apply the Glasskube resources or you will have to sync manually.
+Either way, you should be able to observe the `glasskube` application, e.g. like this in the UI:
+
+TODO screenshot of only glasskube being there after the first step. 
+
+As soon as the sync has completed, Glasskube will be bootstrapped in your cluster, which you can check by using `glasskube ls`, for example:
+
+```shell
+
+```
 
 ## Installing packages
 
