@@ -169,12 +169,13 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: apps/cert-manager/clusterpackage.yaml
+    path: apps/cert-manager
     repoURL: https://github.com/glasskube/TBA
     targetRevision: HEAD
 ```
 
-After commiting and pushing these two files, you can sync the new application via ArgoCD. 
+After commiting and pushing these two files, you can sync the new application via ArgoCD. After the sync, the `cert-manager` application
+will appear in ArgoCD. 
 
 ### Installing kube-prometheus-stack
 

@@ -10,6 +10,6 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: apps/cert-manager/clusterpackage.yaml
+    path: apps/cert-manager
     repoURL: https://github.com/christophenne/glasskube-argocd-demo
     targetRevision: HEAD
