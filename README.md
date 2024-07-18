@@ -11,6 +11,7 @@ This guide is structured as follows:
 * [Installing packages](#installing-packages)
 * [Updating packages](#updating-packages)
 * [Updating Glasskube](#updating-glasskube)
+* [Custom Package Repository](#custom-package-repository)
 * [Known Issues](#known-issues)
 * [Summary](#summary)
 
@@ -77,14 +78,47 @@ spec:
 TODO not sure about all the paths/directory structure yet, but I think every package must be in its own directory, so that we can refer to it explicitly in the wrapping Application
 
 Depending on the selected sync policy, ArgoCD will automatically apply the Glasskube resources or you will have to sync manually.
-Either way, you should be able to observe the `glasskube` application, e.g. like this in the UI:
+Either way, you should be able to observe the `glasskube` application like this in the UI:
 
 TODO screenshot of only glasskube being there after the first step. 
 
-As soon as the sync has completed, Glasskube will be bootstrapped in your cluster, which you can check by using `glasskube ls`, for example:
+As soon as the sync has completed, Glasskube will be bootstrapped in your cluster, which you can check by using `glasskube version`, for example:
 
-```shell
+```
+$ glasskube version
+  ____ _        _    ____ ____  _  ___   _ ____  _____ 
+ / ___| |      / \  / ___/ ___|| |/ / | | | __ )| ____|
+| |  _| |     / _ \ \___ \___ \| ' /| | | |  _ \|  _|  
+| |_| | |___ / ___ \ ___) |__) | . \| |_| | |_) | |___ 
+ \____|_____/_/   \_\____/____/|_|\_\\___/|____/|_____|									  
+	
+glasskube: v0.13.0
+package-operator: v0.13.0
+```
 
+We can also have a look at the available clusterpackages and packages:
+
+```
+$ glasskube ls
+PACKAGENAME  NAMESPACE  NAME  VERSION  AUTO-UPDATE  REPOSITORY  STATUS
+quickwit                                            glasskube   Not installed  
+
+NAME                      VERSION  AUTO-UPDATE  REPOSITORY  STATUS
+argo-cd                                         glasskube   Not installed  
+caddy-ingress-controller                        glasskube   Not installed  
+cert-manager                                    glasskube   Not installed  
+cloudnative-pg                                  glasskube   Not installed  
+cyclops                                         glasskube   Not installed  
+gateway-api                                     glasskube   Not installed  
+headlamp                                        glasskube   Not installed  
+ingress-nginx                                   glasskube   Not installed  
+k8sgpt-operator                                 glasskube   Not installed  
+keptn                                           glasskube   Not installed  
+kube-prometheus-stack                           glasskube   Not installed  
+kubernetes-dashboard                            glasskube   Not installed  
+kubetail                                        glasskube   Not installed  
+rabbitmq-operator                               glasskube   Not installed  
+sealed-secrets                                  glasskube   Not installed  
 ```
 
 ## Installing packages
@@ -99,11 +133,58 @@ just for your convenience.
 
 ### Installing cert-manager
 
+The following command will simulate installing the `cert-manager` clusterpackage in its latest version.
+Make sure to disable auto updates by Glasskube, as we will instead use renovate (see below).
+
+```
+$ glasskube install cert-manager --dry-run -o yaml > apps/cert-manager/clusterpackage.yaml
+
+Version not specified. The latest version v1.15.1+1 of cert-manager will be installed.
+Would you like to enable automatic updates? (y/N) N
+Summary:
+ * The following packages will be installed in your cluster (glasskube-argocd-demo):
+    1. cert-manager (version v1.15.1+1)
+ * Automatic updates will be not enabled
+Continue? (Y/n) 
+✅ cert-manager is now installed in glasskube-argocd-demo.
+```
+
+Note that the created resource has a flaw in the current version (`v0.13.0`), which is that too much `metadata` is being set.
+Of the created metadata, only the `name` should be included – for now you have to manually remove the rest to avoid weird out-of-sync
+issues with ArgoCD. You can find the corresponding issue [here](https://github.com/glasskube/glasskube/issues/1008). 
+
+Following the apps of apps pattern again, we want to wrap our clusterpackage in an argo `Application` custom resource
+in `apps/cert-manager.yaml`, which holds the reference to the clusterpackage resource:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: apps/cert-manager/clusterpackage.yaml
+    repoURL: https://github.com/glasskube/TBA
+    targetRevision: HEAD
+```
+
+After commiting and pushing these two files, you can sync the new application via ArgoCD. 
+
 ### Installing kube-prometheus-stack
+
+The [ArgoCD documentation's example](https://github.com/argoproj/argocd-example-apps/tree/master/apps) makes use of helm to template out the dynamic parts of this `Application` resource.
 
 ## Updating packages
 
 ## Updating Glasskube
+
+## Custom Package Repository
 
 ## Known Issues
 
