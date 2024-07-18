@@ -53,7 +53,7 @@ glasskube bootstrap --dry-run -o yaml > apps/glasskube.yaml
 Following the [ArgoCD documentation](https://argo-cd.readthedocs.io/en/stable/operator-manual/cluster-bootstrapping/#app-of-apps-pattern), we create the parent application `glasskube` manually via the argo CLI or UI. 
 Of course you can also define it as an `Application` custom resource and apply it with `kubectl` 
 
-(TODO I would expect that it's possible to also have the parent application in the gitops repo – 
+(**TODO** I would expect that it's possible to also have the parent application in the gitops repo – 
 but I don't know how it would initially get picked up by argo? – also in the Argo docs it's done manually via CLI). 
 
 Most notably, we indirectly refer to the previously generated `yaml` in `path`. This is what the custom resource could look like
@@ -75,7 +75,7 @@ spec:
     targetRevision: HEAD
 ```
 
-TODO not sure about all the paths/directory structure yet, but I think every package must be in its own directory, so that we can refer to it explicitly in the wrapping Application
+**TODO** not sure about all the paths/directory structure yet, but I think every package must be in its own directory, so that we can refer to it explicitly in the wrapping Application
 
 Depending on the selected sync policy, ArgoCD will automatically apply the Glasskube resources or you will have to sync manually.
 Either way, you should be able to observe the `glasskube` application like this in the UI:
@@ -175,7 +175,28 @@ spec:
 ```
 
 After commiting and pushing these two files, you can sync the new application via ArgoCD. After the sync, the `cert-manager` application
-will appear in ArgoCD. 
+will appear in ArgoCD. You can observe the clusterpackages status via the Glasskube CLI:
+
+```
+$ glasskube describe cert-manager
+Package: cert-manager — X.509 certificate management for Kubernetes and OpenShift
+Version:     v1.15.1+1
+Status:      Ready
+Message:     flux: Helm install succeeded for release cert-manager/cert-manager-cert-manager.v1 with chart cert-manager@v1.15.1
+Auto-Update: Disabled
+
+Package repositories:
+ * glasskube (installed)
+
+References: 
+ * Glasskube Package Manifest: https://packages.dl.glasskube.dev/packages/cert-manager/v1.15.1+1/package.yaml
+ * ArtifactHub: https://artifacthub.io/packages/helm/cert-manager/cert-manager
+
+Long Description:
+A Helm chart for cert-manager
+```
+
+**TODO** follow up issue or argo integration question: how could we sync the clusterpackage status to be reflected in the argo application?
 
 ### Installing kube-prometheus-stack
 
