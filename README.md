@@ -198,7 +198,7 @@ A Helm chart for cert-manager
 
 Note that currently we do not provide an explicit way to sync the clusterpackage's status to the argo application. If you know a good way
 how to integrate that with ArgoCD, please let us know. Otherwise, the application will just appear as OK/in-sync, even though it is 
-actually still installing in the background (**TODO**).
+actually still installing in the background (**TODO maybe this is good enough / figure this out?**).
 
 ### Installing kube-prometheus-stack
 
@@ -211,11 +211,68 @@ In that case, we should also support `--file <path-to-clusterpackage-yaml>` to b
 
 ## Updating packages
 
+There are two options handling package version updates: 
+* Using the `glasskube update --dry-run -o yaml` command (WIP, see [glasskube/glasskube#660](https://github.com/glasskube/glasskube/issues/660))
+* Integrating [renovate](https://github.com/renovatebot/renovate) into the cluster. 
+
+### Integrating Renovate
+
+Renovate Glasskube Support is still work in progress (see [renovatebot/renovate#29322](https://github.com/renovatebot/renovate/issues/29322)), 
+but we will show a proof of concept in the following, since the datasource/versioning part is already available.
+
+Assuming you are working with a Github repository, you can use the Renovate Github App and enable it for that particular repo. 
+We can add the following `regexMatcher` to `renovate.json`:
+
+```json
+{
+  …,
+  "regexManagers": [
+    {
+        "fileMatch": [
+          ".+\\.(yaml)|(yml)$"
+        ],
+        "matchStrings": [
+          "packageInfo:.*\n.*name: (?<depName>.*)\n.*\n.*version: (?<currentValue>.*)"
+        ],
+        "datasourceTemplate": "glasskube-packages",
+        "versioningTemplate": "glasskube"
+    }
+  ],
+  …
+}
+```
+
+The manager simply looks for all appearances of 
+
+```yaml
+packageInfo:
+  name: <depName>
+  version: <currentValue>
+```
+
+in all the repo's yaml files, where the `depName` and `currentValue` will be used by renovate to extract the current version of this (cluster-)package. 
+
+One issue with this regex-based approach is, that `name` and `version` have to appear in that order, even though schematically it would also be correct the other way around.
+
+Another limitation of the current renovate integration is, that it works only with packages of the [public Glasskube package repo](https://github.com/glasskube/packages). 
+
 ## Updating Glasskube
+
+**TODO** probably also with renovate but how?
 
 ## Custom Package Repository
 
 ## Known Issues
+
+### Dependency Resolution
+
+Installing packages with dependencies is not 100% GitOps-compatible yet, as the dependencies will be created by the operator. 
+Consider this: To install a clusterpackage `P` that has a dependency on `D`, one would do `glasskube install P --dry-run -o yaml`, which
+would output the clusterpackage custom resource for `P`. However, the dependency `D` will only be resolved at reconciliation time by
+the package operator, and will therefore not be represented in the git repository at all. A temporary workaround would be to have a closer look
+at the output of the `install` command, which also shows the dependencies which will be installed and in which version. One could then 
+manually add the required packages custom resources to the git repo as well. However, this will be tackled in a future version to make the
+user experience better, see [glasskube/glasskube#430](https://github.com/glasskube/glasskube/issues/430). 
 
 ## Summary
 
