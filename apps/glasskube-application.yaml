@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: glasskube
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: apps/glasskube/glasskube
+    repoURL: https://github.com/christophenne/glasskube-argocd-demo
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
