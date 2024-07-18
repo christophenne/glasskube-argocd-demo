@@ -196,11 +196,18 @@ Long Description:
 A Helm chart for cert-manager
 ```
 
-**TODO** follow up issue or argo integration question: how could we sync the clusterpackage status to be reflected in the argo application?
+Note that currently we do not provide an explicit way to sync the clusterpackage's status to the argo application. If you know a good way
+how to integrate that with ArgoCD, please let us know. Otherwise, the application will just appear as OK/in-sync, even though it is 
+actually still installing in the background (**TODO**).
 
 ### Installing kube-prometheus-stack
 
+TBA
+
 The [ArgoCD documentation's example](https://github.com/argoproj/argocd-example-apps/tree/master/apps) makes use of helm to template out the dynamic parts of this `Application` resource.
+(**TODO** I didn't want to do this since it might feel like helm is required to use Glasskube – I guess advanced users will figure this part out anyway. 
+On the other hand, this could be something the CLI command could support? a flag like `--with-argo-application <path-to-application-yaml>` and then you get the additional yaml written to that file. 
+In that case, we should also support `--file <path-to-clusterpackage-yaml>` to be consistent)
 
 ## Updating packages
 
