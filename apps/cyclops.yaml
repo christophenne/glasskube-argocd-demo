@@ -10,6 +10,6 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: apps/packages/cyclops/clusterpackage.yaml
+    path: apps/cyclops/clusterpackage.yaml
     repoURL: https://github.com/christophenne/glasskube-argocd-demo
     targetRevision: HEAD
