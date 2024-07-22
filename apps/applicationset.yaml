@@ -9,6 +9,9 @@ spec:
   generators:
     - git:
         repoURL: https://github.com/christophenne/glasskube-argocd-demo
+        revision: HEAD
+        directories:
+          - path: '/apps-via-applicationset/packages'
   template:
     metadata:
       name: 'application-{{ .path.basename }}'
@@ -17,6 +20,6 @@ spec:
       source:
         repoURL: https://github.com/christophenne/glasskube-argocd-demo
         targetRevision: HEAD
-        path: apps-via-applicationset/packages
+        path: '{{.path.path}}'
       destination:
         server: https://kubernetes.default.svc
