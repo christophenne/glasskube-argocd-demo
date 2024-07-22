@@ -11,7 +11,7 @@ spec:
         repoURL: https://github.com/christophenne/glasskube-argocd-demo
         revision: HEAD
         directories:
-          - path: '/apps-via-applicationset/packages'
+          - path: '/apps-via-applicationset/packages/cert-manager'
   template:
     metadata:
       name: 'application-{{ .path.basename }}'
