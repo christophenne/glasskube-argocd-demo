@@ -149,10 +149,6 @@ Continue? (Y/n)
 ✅ cert-manager is now installed in glasskube-argocd-demo.
 ```
 
-Note that the created resource has a flaw in the current version (`v0.13.0`), which is that too much `metadata` is being set.
-Of the created metadata, only the `name` should be included – for now you have to manually remove the rest to avoid weird out-of-sync
-issues with ArgoCD. You can find the corresponding issue [here](https://github.com/glasskube/glasskube/issues/1008). 
-
 Following the apps of apps pattern again, we want to wrap our clusterpackage in an argo `Application` custom resource
 in `apps/cert-manager.yaml`, which holds the reference to the clusterpackage resource:
 
