@@ -7,6 +7,6 @@ spec:
   packageInfo:
     name: cyclops
     repositoryName: glasskube
-    version: v0.7.3+1
+    version: v0.8.2+1
 status: {}
 
