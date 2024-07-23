@@ -9941,7 +9941,7 @@ spec:
         - --leader-elect
         command:
         - /package-operator
-        image: ghcr.io/glasskube/package-operator:v0.13.0
+        image: ghcr.io/glasskube/package-operator:v0.14.0
         livenessProbe:
           httpGet:
             path: /healthz
@@ -10021,7 +10021,7 @@ spec:
           containers:
           - command:
             - /cert-manager
-            image: ghcr.io/glasskube/package-operator:v0.13.0
+            image: ghcr.io/glasskube/package-operator:v0.14.0
             name: manager
             resources:
               limits:
@@ -10052,7 +10052,7 @@ spec:
       containers:
       - command:
         - /cert-manager
-        image: ghcr.io/glasskube/package-operator:v0.13.0
+        image: ghcr.io/glasskube/package-operator:v0.14.0
         name: manager
         resources:
           limits:
