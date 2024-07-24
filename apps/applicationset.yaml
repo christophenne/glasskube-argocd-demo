@@ -14,7 +14,7 @@ spec:
           - path: 'apps-via-applicationset/packages/*'
   template:
     metadata:
-      name: 'application-{{ .path.basename }}'
+      name: '{{ .path.basename }}'
     spec:
       project: default
       source:
