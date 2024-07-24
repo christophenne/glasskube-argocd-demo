@@ -11,7 +11,7 @@ spec:
         repoURL: https://github.com/christophenne/glasskube-argocd-demo
         revision: HEAD
         directories:
-          - path: 'packages/*'
+          - path: 'packages/**/'
   template:
     metadata:
       name: '{{ .path.basename }}'
