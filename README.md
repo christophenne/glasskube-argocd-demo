@@ -1,6 +1,7 @@
 # glasskube-argocd-demo
 
 In this guide we explore some options of using Glasskube in a GitOps powered environment with ArgoCD and renovate.
+We will install a demo web application on top of it. 
 Feel free to try out all the steps yourself in your own test cluster.
 We are also eager to get feedback on Glasskube and the guide and are happy to discuss your inputs.
 
@@ -32,8 +33,8 @@ This repo already contains the completed solution, so if you aim to follow the g
 
 ## General Setup
 
-First, let's discuss how we are going to do it: We will follow the [Apps of Apps Pattern](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#app-of-apps),
-and therefore have one Application for every installed Glasskube package, and one Application for Glasskube itself. 
+First, let's discuss how we are going to do it: We make use of ArgoCDs [ApplicationSet](https://argo-cd.readthedocs.io/en/stable/user-guide/application-set/),
+and therefore will have one Application for every installed Glasskube package, and one Application for Glasskube itself. 
 
 TBA
 
@@ -75,8 +76,6 @@ spec:
     targetRevision: HEAD
 ```
 
-**TODO** not sure about all the paths/directory structure yet, but I think every package must be in its own directory, so that we can refer to it explicitly in the wrapping Application
-
 Depending on the selected sync policy, ArgoCD will automatically apply the Glasskube resources or you will have to sync manually.
 Either way, you should be able to observe the `glasskube` application like this in the UI:
 
@@ -92,8 +91,8 @@ $ glasskube version
 | |_| | |___ / ___ \ ___) |__) | . \| |_| | |_) | |___ 
  \____|_____/_/   \_\____/____/|_|\_\\___/|____/|_____|									  
 	
-glasskube: v0.13.0
-package-operator: v0.13.0
+glasskube: v0.14.0
+package-operator: v0.14.0
 ```
 
 We can also have a look at the available clusterpackages and packages:
@@ -128,8 +127,12 @@ in our cluster and thereby get the `Package` or `ClusterPackage` custom resource
 
 Please note: Even though the command does not apply anything, it still requires Glasskube to already be bootstrapped in the cluster, since the CRDs
 need to be present, amongst other reasons. If you want to apply all applications in one step/commit (i.e. glasskube + installed packages),
-you are of course free to write the `Package` or `ClusterPackage` custom resources yourself – the `--dry-run` + `-o yaml` approach is
+you are of course free to write the `Package` or `ClusterPackage` custom resources yourself – the `--dry-run -o yaml` approach is
 just for your convenience. 
+
+### Setting up the ApplicationSet
+
+TBA
 
 ### Installing cert-manager
 
@@ -137,7 +140,7 @@ The following command will simulate installing the `cert-manager` clusterpackage
 Make sure to disable auto updates by Glasskube, as we will instead use renovate (see below).
 
 ```
-$ glasskube install cert-manager --dry-run -o yaml > apps/cert-manager/clusterpackage.yaml
+$ glasskube install cert-manager --dry-run -o yaml > packages/cert-manager/cert-manager.yaml
 
 Version not specified. The latest version v1.15.1+1 of cert-manager will be installed.
 Would you like to enable automatic updates? (y/N) N
@@ -147,27 +150,6 @@ Summary:
  * Automatic updates will be not enabled
 Continue? (Y/n) 
 ✅ cert-manager is now installed in glasskube-argocd-demo.
-```
-
-Following the apps of apps pattern again, we want to wrap our clusterpackage in an argo `Application` custom resource
-in `apps/cert-manager.yaml`, which holds the reference to the clusterpackage resource:
-
-```yaml
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: cert-manager
-  namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
-spec:
-  destination:
-    server: https://kubernetes.default.svc
-  project: default
-  source:
-    path: apps/cert-manager
-    repoURL: https://github.com/glasskube/TBA
-    targetRevision: HEAD
 ```
 
 After commiting and pushing these two files, you can sync the new application via ArgoCD. After the sync, the `cert-manager` application
@@ -199,11 +181,6 @@ actually still installing in the background (**TODO maybe this is good enough / 
 ### Installing kube-prometheus-stack
 
 TBA
-
-The [ArgoCD documentation's example](https://github.com/argoproj/argocd-example-apps/tree/master/apps) makes use of helm to template out the dynamic parts of this `Application` resource.
-(**TODO** I didn't want to do this since it might feel like helm is required to use Glasskube – I guess advanced users will figure this part out anyway. 
-On the other hand, this could be something the CLI command could support? a flag like `--with-argo-application <path-to-application-yaml>` and then you get the additional yaml written to that file. 
-In that case, we should also support `--file <path-to-clusterpackage-yaml>` to be consistent)
 
 ## Updating packages
 
